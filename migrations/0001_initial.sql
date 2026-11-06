@@ -1,0 +1,15 @@
+PRAGMA foreign_keys = ON;
+CREATE TABLE IF NOT EXISTS cases (id TEXT PRIMARY KEY,title TEXT NOT NULL,subtitle TEXT NOT NULL,description TEXT NOT NULL,status TEXT NOT NULL CHECK(status IN ('open','closed')),opened_at TEXT NOT NULL,location TEXT NOT NULL,subject TEXT NOT NULL);
+CREATE TABLE IF NOT EXISTS suspects (id TEXT PRIMARY KEY,case_id TEXT NOT NULL REFERENCES cases(id),name TEXT NOT NULL,role TEXT NOT NULL,age INTEGER NOT NULL CHECK(age BETWEEN 18 AND 110),risk TEXT NOT NULL CHECK(risk IN ('low','medium','high')),alibi TEXT NOT NULL,background TEXT NOT NULL,motive TEXT NOT NULL,portrait TEXT NOT NULL DEFAULT '',sort_order INTEGER NOT NULL);
+CREATE TABLE IF NOT EXISTS evidence (id TEXT PRIMARY KEY,case_id TEXT NOT NULL REFERENCES cases(id),title TEXT NOT NULL,category TEXT NOT NULL,description TEXT NOT NULL,source TEXT NOT NULL,recorded_at TEXT NOT NULL,unlock_key TEXT NOT NULL DEFAULT '',suspect_id TEXT REFERENCES suspects(id),sort_order INTEGER NOT NULL);
+CREATE TABLE IF NOT EXISTS interviews (id TEXT PRIMARY KEY,case_id TEXT NOT NULL REFERENCES cases(id),suspect_id TEXT NOT NULL REFERENCES suspects(id),interviewer TEXT NOT NULL,conducted_at TEXT NOT NULL,transcript TEXT NOT NULL);
+CREATE TABLE IF NOT EXISTS messages (id TEXT PRIMARY KEY,case_id TEXT NOT NULL REFERENCES cases(id),channel TEXT NOT NULL CHECK(channel IN ('sms','email')),sender TEXT NOT NULL,recipient TEXT NOT NULL,subject TEXT NOT NULL DEFAULT '',body TEXT NOT NULL,sent_at TEXT NOT NULL,unlock_key TEXT NOT NULL DEFAULT '');
+CREATE TABLE IF NOT EXISTS timeline_events (id TEXT PRIMARY KEY,case_id TEXT NOT NULL REFERENCES cases(id),event_at TEXT NOT NULL,title TEXT NOT NULL,description TEXT NOT NULL,unlock_key TEXT NOT NULL DEFAULT '');
+CREATE TABLE IF NOT EXISTS detective_notes (id TEXT PRIMARY KEY,case_id TEXT NOT NULL REFERENCES cases(id),owner_id TEXT NOT NULL,body TEXT NOT NULL,created_at TEXT NOT NULL,updated_at TEXT NOT NULL);
+CREATE TABLE IF NOT EXISTS investigation_progress (id TEXT PRIMARY KEY,case_id TEXT NOT NULL REFERENCES cases(id),owner_id TEXT NOT NULL,progress_json TEXT NOT NULL,updated_at TEXT NOT NULL);
+CREATE INDEX IF NOT EXISTS idx_suspects_case ON suspects(case_id,sort_order);
+CREATE INDEX IF NOT EXISTS idx_evidence_case ON evidence(case_id,sort_order);
+CREATE INDEX IF NOT EXISTS idx_messages_case ON messages(case_id,sent_at);
+CREATE INDEX IF NOT EXISTS idx_timeline_case ON timeline_events(case_id,event_at);
+CREATE INDEX IF NOT EXISTS idx_interviews_suspect ON interviews(suspect_id);
+CREATE INDEX IF NOT EXISTS idx_notes_owner ON detective_notes(owner_id,case_id);
