@@ -1,5 +1,8 @@
 # CASE 404 — Digital Forensics System
 
+**[Play the live detective game](https://case-404.radostradi-pogo.workers.dev/)** · [Cloudflare Worker API](https://case-404.radostradi-pogo.workers.dev/api/health)
+
+
 A portfolio-ready, original interactive detective investigation using **vanilla HTML/CSS/JS**, **Cloudflare Workers**, and **Cloudflare D1 (SQLite)**. No paid APIs or backend accounts.
 
 ## Project structure
